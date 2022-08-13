@@ -11,7 +11,6 @@ from crowd_datasets import build_dataset
 from engine import *
 from models import build_model
 import os
-from tensorboardX import SummaryWriter
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -68,7 +67,7 @@ def get_args_parser():
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('--eval', action='store_true')
-    parser.add_argument('--num_workers', default=8, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--eval_freq', default=5, type=int,
                         help='frequency of evaluation, default setting is evaluating in every 5 epoch')
     parser.add_argument('--gpu_id', default=0, type=int, help='the gpu used for training')
@@ -150,7 +149,6 @@ def main(args):
     mae = []
     mse = []
     # the logger writer
-    writer = SummaryWriter(args.tensorboard_dir)
     
     step = 0
     # training starts here
@@ -160,14 +158,14 @@ def main(args):
             model, criterion, data_loader_train, optimizer, device, epoch,
             args.clip_max_norm)
 
-        # record the training states after every epoch
-        if writer is not None:
-            with open(run_log_name, "a") as log_file:
-                log_file.write("loss/loss@{}: {}".format(epoch, stat['loss']))
-                log_file.write("loss/loss_ce@{}: {}".format(epoch, stat['loss_ce']))
+    #     # record the training states after every epoch
+        # if writer is not None:
+        #     with open(run_log_name, "a") as log_file:
+        #         log_file.write("loss/loss@{}: {}".format(epoch, stat['loss']))
+        #         log_file.write("loss/loss_ce@{}: {}".format(epoch, stat['loss_ce']))
                 
-            writer.add_scalar('loss/loss', stat['loss'], epoch)
-            writer.add_scalar('loss/loss_ce', stat['loss_ce'], epoch)
+        #     writer.add_scalar('loss/loss', stat['loss'], epoch)
+        #     writer.add_scalar('loss/loss_ce', stat['loss_ce'], epoch)
 
         t2 = time.time()
         print('[ep %d][lr %.7f][%.2fs]' % \
@@ -197,13 +195,13 @@ def main(args):
                                 result[1], t2 - t1, np.min(mae)))
             print('=======================================test=======================================')
             # recored the evaluation results
-            if writer is not None:
-                with open(run_log_name, "a") as log_file:
-                    log_file.write("metric/mae@{}: {}".format(step, result[0]))
-                    log_file.write("metric/mse@{}: {}".format(step, result[1]))
-                writer.add_scalar('metric/mae', result[0], step)
-                writer.add_scalar('metric/mse', result[1], step)
-                step += 1
+            # if writer is not None:
+            #     with open(run_log_name, "a") as log_file:
+            #         log_file.write("metric/mae@{}: {}".format(step, result[0]))
+            #         log_file.write("metric/mse@{}: {}".format(step, result[1]))
+            #     writer.add_scalar('metric/mae', result[0], step)
+            #     writer.add_scalar('metric/mse', result[1], step)
+            #     step += 1
 
             # save the best model since begining
             if abs(np.min(mae) - result[0]) < 0.01:

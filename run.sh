@@ -1,4 +1,4 @@
-python3.7 train.py --data_root $DATA_ROOT \
+python3.7 train.py --data_root /home/u20/d2/code/RGBTCrowdCounting/DroneRGBT/save \
     --dataset_file SHHA \
     --epochs 3500 \
     --lr_drop 3500 \
