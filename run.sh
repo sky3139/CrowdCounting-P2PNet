@@ -1,0 +1,12 @@
+python3.7 train.py --data_root $DATA_ROOT \
+    --dataset_file SHHA \
+    --epochs 3500 \
+    --lr_drop 3500 \
+    --output_dir ./logs \
+    --checkpoints_dir ./weights \
+    --tensorboard_dir ./logs \
+    --lr 0.0001 \
+    --lr_backbone 0.00001 \
+    --batch_size 8 \
+    --eval_freq 1 \
+    --gpu_id 0
