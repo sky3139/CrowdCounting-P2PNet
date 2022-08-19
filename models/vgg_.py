@@ -25,8 +25,8 @@ model_urls = {
 
 
 model_paths = {
-    'vgg16_bn': '/home/u20/d2/code/CrowdCounting-P2PNet/models/vgg16_bn-6c64b313.pth',
-    'vgg16': '/home/u20/d2/code/CrowdCounting-P2PNet/models/vgg16-397923af.pth',
+    'vgg16_bn': './models/vgg16_bn-6c64b313.pth',
+    'vgg16': './models/vgg16-397923af.pth',
 
 }
 

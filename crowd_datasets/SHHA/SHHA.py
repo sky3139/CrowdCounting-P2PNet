@@ -25,14 +25,8 @@ class SHHA(Dataset):
         self.img_gt_list = []
         # loads the image/gt pairs
         for i, train_list in enumerate(self.gt_list):
-            if train and i%2==0:
-                rgb_path = train_list.replace('GT', 'RGB').replace('npy', 'jpg')
-                t_path = train_list.replace('GT', 'T').replace('npy', 'jpg')
-                self.img_gt_list.append([rgb_path,train_list])
-            if train==False and i%2==1:
-                rgb_path = train_list.replace('GT', 'RGB').replace('npy', 'jpg')
-                t_path = train_list.replace('GT', 'T').replace('npy', 'jpg')
-                self.img_gt_list.append([rgb_path,train_list])
+            rgb_path = train_list.replace('GT', 'RGB').replace('npy', 'jpg')
+            self.img_gt_list.append([rgb_path,train_list])
             # print(rgb_path,train_list)
 
             # self.img_map[rgb_path] =train_list
@@ -52,9 +46,10 @@ class SHHA(Dataset):
 
         img_path = self.img_gt_list[index][0]
         gt_path = self.img_gt_list[index][1]
-        # print(img_path,gt_path)
-        # load image and ground truth
-        img, point = load_data((img_path, gt_path), self.train)
+
+        img=Image.open(img_path).convert('RGB')
+        point=np.load(gt_path).astype("float64")
+
         # print(point)
         # applu augumentation
         if self.transform is not None:
@@ -96,18 +91,6 @@ class SHHA(Dataset):
             target[i]['labels'] = torch.ones([point[i].shape[0]]).long()
 
         return img, target
-
-
-def load_data(img_gt_path, train):
-    img_path, gt_path = img_gt_path
-    # print(gt_path)
-    # load the images
-    img = cv2.imread(img_path)
-    img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    # load ground truth points
-    points  = np.load(gt_path)
-    # print(gt_path,points)
-    return img, np.array(points).astype("float64")
 
 # random crop augumentation
 def random_crop(img, den, num_patch=4):

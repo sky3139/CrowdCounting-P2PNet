@@ -1,11 +1,10 @@
 models/vgg16*
 models/__pycache__*
 crowd_datasets/SHHA/__pycache__/*
-logs/run_log.txt
+logs/*
 crowd_datasets/__pycache__/*
 util/__pycache__/*
 __pycache__/*
-
+util/__pycache__
 util/__pycache__/misc.cpython-37.pyc
 weights
-
