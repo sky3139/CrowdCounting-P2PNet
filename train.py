@@ -43,7 +43,7 @@ def get_args_parser():
     # * Loss coefficients
     parser.add_argument('--point_loss_coef', default=0.0002, type=float)
 
-    parser.add_argument('--eos_coef', default=0.5, type=float,
+    parser.add_argument('--eos_coef', default=0.65, type=float,
                         help="Relative classification weight of the no-object class")
     parser.add_argument('--row', default=2, type=int,
                         help="row number of anchor points")
@@ -67,12 +67,14 @@ def get_args_parser():
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('--eval', action='store_true')
-    parser.add_argument('--num_workers', default=0, type=int)
+    parser.add_argument('--num_workers', default=4, type=int)
     parser.add_argument('--eval_freq', default=5, type=int,
                         help='frequency of evaluation, default setting is evaluating in every 5 epoch')
     parser.add_argument('--gpu_id', default=0, type=int, help='the gpu used for training')
     parser.add_argument(
         '--model', default='./weights/best_mae.pth', help='model name')
+    parser.add_argument('--type', default='RGB',
+                        help='path where to save')
     return parser
 
 def main(args):
@@ -99,11 +101,11 @@ def main(args):
     # move to GPU
     model.to(device)
 
+
     if args.model!="":
         print(args.model)
         checkpoint = torch.load(args.model, map_location='cpu')
         model.load_state_dict(checkpoint['model'])
-
 
     criterion.to(device)
 
@@ -183,7 +185,7 @@ def main(args):
         # change lr according to the scheduler
         lr_scheduler.step()
         # save latest weights every epoch
-        checkpoint_latest_path = os.path.join(args.checkpoints_dir, 'latest.pth')
+        checkpoint_latest_path = os.path.join(args.checkpoints_dir,'b_latest%s_%s.pth'%(args.eos_coef,args.type))
         torch.save({
             'model': model_without_ddp.state_dict(),
         }, checkpoint_latest_path)
@@ -213,7 +215,7 @@ def main(args):
 
             # save the best model since begining
             if abs(np.min(mae) - result[0]) < 0.01:
-                checkpoint_best_path = os.path.join(args.checkpoints_dir, 'best_mae.pth')
+                checkpoint_best_path = os.path.join(args.checkpoints_dir, 'b_mae%s_%s.pth'%(args.eos_coef,args.type))
                 torch.save({
                     'model': model_without_ddp.state_dict(),
                 }, checkpoint_best_path)
