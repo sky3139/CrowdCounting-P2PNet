@@ -33,7 +33,8 @@ def get_args_parser():
                         help='path where to save')
     parser.add_argument('--weight_path', default='./weights/best_mae.pth',
                         help='path where the trained weights saved')
-
+    parser.add_argument('--type', default='RGB',
+                        help='path where to save')
     parser.add_argument('--gpu_id', default=0, type=int, help='the gpu used for evaluation')
 
     return parser
@@ -59,7 +60,7 @@ def main(args, debug=False):
         standard_transforms.ToTensor(), 
         standard_transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
-    npy_path="/home/u20/d2/dataset/DroneRGBT/save"+"/train/*RGB.jpg"
+    npy_path="/home/u20/d2/dataset/DroneRGBT/save"+"/train/*%s.jpg"%args.type
     gt_list =sorted( glob.glob(npy_path))  # change to npy for gt_list
     for img_path in gt_list:
     # set your image path here
@@ -81,11 +82,15 @@ def main(args, debug=False):
         
         outputs_points = outputs['pred_points'][0]
 
-        threshold = 0.5
+        threshold = 0.7
         # filter the predictions
-        points = outputs_points[outputs_scores > threshold].detach().cpu().numpy().tolist()
+        addata=[]
+        for td in [0.5,0.6,0.7,0.75,0.8]:
+
+            points = outputs_points[outputs_scores > threshold].detach().cpu().numpy().tolist()
+            addata.append(float(len(points)))
         imgid=img_path.split('/')[-1].replace("_RGB.jpg","")
-        print(imgid,",",float(len(points)))
+        print(imgid,",",addata[0],addata[1],addata[2],addata[3],addata[4])
         # predict_cnt = int((outputs_scores > threshold).sum())
 
         # outputs_scores = torch.nn.functional.softmax(outputs['pred_logits'], -1)[:, :, 1][0]

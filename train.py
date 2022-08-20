@@ -71,7 +71,8 @@ def get_args_parser():
     parser.add_argument('--eval_freq', default=5, type=int,
                         help='frequency of evaluation, default setting is evaluating in every 5 epoch')
     parser.add_argument('--gpu_id', default=0, type=int, help='the gpu used for training')
-
+    parser.add_argument(
+        '--model', default='./weights/best_mae.pth', help='model name')
     return parser
 
 def main(args):
@@ -97,6 +98,13 @@ def main(args):
     model, criterion = build_model(args, training=True)
     # move to GPU
     model.to(device)
+
+    if args.model!="":
+        print(args.model)
+        checkpoint = torch.load(args.model, map_location='cpu')
+        model.load_state_dict(checkpoint['model'])
+
+
     criterion.to(device)
 
     model_without_ddp = model
